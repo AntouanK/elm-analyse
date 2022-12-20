@@ -6,6 +6,7 @@ interface Config {
     open: boolean;
     port: number;
     elmFormatPath: string;
+    logging: boolean;
 }
 
 export interface DependencyPointer {
@@ -182,5 +183,5 @@ export {
     FileContentSha,
     EditorElmApp,
     EditorMessage,
-    EditorData
+    EditorData,
 };

@@ -39,12 +39,14 @@ function start(config, project) {
             flags: {
                 server: false,
                 registry: registry || [],
-                project: project
-            }
+                project: project,
+                logging: config.logging,
+            },
         });
         app.ports.sendReportValue.subscribe(function (report) {
             reporter.report(report);
-            var fail = report.messages.length > 0 || report.unusedDependencies.length > 0;
+            var fail = report.messages.length > 0 ||
+                report.unusedDependencies.length > 0;
             process.exit(fail ? 1 : 0);
         });
         loggingPorts.setup(app, config);

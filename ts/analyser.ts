@@ -11,18 +11,21 @@ const Elm = require('./backend-elm');
 function start(config: Config, project: {}) {
     const reporter = Reporter.build(config.format);
 
-    dependencies.getDependencies(function(registry: Registry) {
+    dependencies.getDependencies(function (registry: Registry) {
         const app: ElmApp = Elm.Elm.Analyser.init({
             flags: {
                 server: false,
                 registry: registry || [],
-                project: project
-            }
+                project: project,
+                logging: config.logging,
+            },
         });
 
-        app.ports.sendReportValue.subscribe(function(report: Report) {
+        app.ports.sendReportValue.subscribe(function (report: Report) {
             reporter.report(report);
-            const fail = report.messages.length > 0 || report.unusedDependencies.length > 0;
+            const fail =
+                report.messages.length > 0 ||
+                report.unusedDependencies.length > 0;
             process.exit(fail ? 1 : 0);
         });
 

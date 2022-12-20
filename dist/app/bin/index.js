@@ -38,10 +38,11 @@ var args = (0, minimist_1.default)(process.argv.slice(2), {
         help: 'h',
         port: 'p',
         version: 'v',
-        open: 'o'
+        open: 'o',
+        logging: 'l',
     },
-    boolean: ['serve', 'help', 'version', 'open'],
-    string: ['port', 'elm-format-path', 'format']
+    boolean: ['serve', 'help', 'version', 'open', 'logging'],
+    string: ['port', 'elm-format-path', 'format'],
 });
 (function () {
     var elmAnalyseVersion = require(path.join(__dirname, '../../..', 'package.json')).version;
@@ -51,12 +52,13 @@ var args = (0, minimist_1.default)(process.argv.slice(2), {
         port: args.port || 3000,
         elmFormatPath: elmFormatPath,
         format: validFormats.indexOf(args.format) != -1 ? args.format : 'human',
-        open: args.open || false
+        open: args.open || false,
+        logging: args.logging || false,
     };
     var info = {
         version: elmAnalyseVersion,
         cwd: process.cwd(),
-        config: config
+        config: config,
     };
     if (args.help) {
         console.log('Usages:');
@@ -71,6 +73,7 @@ var args = (0, minimist_1.default)(process.argv.slice(2), {
         console.log('   --open, -o          Open default browser when server goes live.');
         console.log('   --elm-format-path   Path to elm-format. Defaults to `elm-format`.');
         console.log('   --format            Output format for CLI. Defaults to "human". Options "human"|"json"');
+        console.log('   --logging, -l       See the logs');
         process.exit(1);
     }
     if (args.version) {
