@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function report(report) {
-    var output = JSON.stringify(report);
+    const output = JSON.stringify(report);
     console.log(output);
 }
-var reporter = { report: report };
+const reporter = { report };
 exports.default = reporter;

@@ -24,11 +24,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setup = void 0;
-var request = __importStar(require("request"));
+const request = __importStar(require("request"));
 function setup(app) {
-    app.ports.loadHttpDocumentation.subscribe(function (pointer) {
-        var name = pointer.name, version = pointer.version;
-        request.get("http://package.elm-lang.org/packages/".concat(name, "/").concat(version, "/docs.json"), function (err, _response, body) {
+    app.ports.loadHttpDocumentation.subscribe((pointer) => {
+        const { name, version } = pointer;
+        request.get(`http://package.elm-lang.org/packages/${name}/${version}/docs.json`, function (err, _response, body) {
             if (err) {
                 app.ports.onHttpDocumentation.send({
                     dependency: pointer,
@@ -37,7 +37,7 @@ function setup(app) {
                 return;
             }
             try {
-                var parsed = JSON.parse(body);
+                const parsed = JSON.parse(body);
                 app.ports.onHttpDocumentation.send({
                     dependency: pointer,
                     json: parsed

@@ -4,24 +4,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connect = void 0;
-var ws_1 = __importDefault(require("ws"));
+const ws_1 = __importDefault(require("ws"));
 function connect(url, es) {
     var ws = new ws_1.default(url);
-    var autoReconnectInterval = 5000;
+    const autoReconnectInterval = 5000;
     var number = 0;
     function bind(ws, events, reconnect) {
-        ws.on('open', function () {
+        ws.on('open', () => {
             if (events.onOpen) {
                 events.onOpen();
             }
         });
-        ws.on('message', function (data) {
+        ws.on('message', (data) => {
             number++;
             if (events.onMessage) {
                 events.onMessage(data, number);
             }
         });
-        ws.on('close', function (e) {
+        ws.on('close', (e) => {
             switch (e) {
                 case 1000:
                     break;
@@ -33,7 +33,7 @@ function connect(url, es) {
                 events.onClose(e);
             }
         });
-        ws.on('error', function (e) {
+        ws.on('error', (e) => {
             switch (e.code) {
                 case 'ECONNREFUSED':
                     reconnect(e);
@@ -46,7 +46,7 @@ function connect(url, es) {
             }
         });
     }
-    var reconnect = function () {
+    const reconnect = function () {
         ws.removeAllListeners();
         setTimeout(function () {
             if (es.onReconnect) {
@@ -58,7 +58,7 @@ function connect(url, es) {
     };
     bind(ws, es, reconnect);
     return {
-        stop: function () {
+        stop: () => {
             ws.close();
         }
     };

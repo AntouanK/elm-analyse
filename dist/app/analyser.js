@@ -26,16 +26,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var fileLoadingPorts = __importStar(require("./file-loading-ports"));
-var loggingPorts = __importStar(require("./util/logging-ports"));
-var dependencies = __importStar(require("./util/dependencies"));
-var reporter_1 = __importDefault(require("./reporter"));
-var directory = process.cwd();
-var Elm = require('./backend-elm');
+const fileLoadingPorts = __importStar(require("./file-loading-ports"));
+const loggingPorts = __importStar(require("./util/logging-ports"));
+const dependencies = __importStar(require("./util/dependencies"));
+const reporter_1 = __importDefault(require("./reporter"));
+const directory = process.cwd();
+const Elm = require('./backend-elm');
 function start(config, project) {
-    var reporter = reporter_1.default.build(config.format);
+    const reporter = reporter_1.default.build(config.format);
     dependencies.getDependencies(function (registry) {
-        var app = Elm.Elm.Analyser.init({
+        const app = Elm.Elm.Analyser.init({
             flags: {
                 server: false,
                 registry: registry || [],
@@ -45,7 +45,7 @@ function start(config, project) {
         });
         app.ports.sendReportValue.subscribe(function (report) {
             reporter.report(report);
-            var fail = report.messages.length > 0 ||
+            const fail = report.messages.length > 0 ||
                 report.unusedDependencies.length > 0;
             process.exit(fail ? 1 : 0);
         });
@@ -53,4 +53,4 @@ function start(config, project) {
         fileLoadingPorts.setup(app, config, directory);
     });
 }
-exports.default = { start: start };
+exports.default = { start };

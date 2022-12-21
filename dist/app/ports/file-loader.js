@@ -24,20 +24,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setup = void 0;
-var fs = __importStar(require("fs"));
-var cp = __importStar(require("child_process"));
+const fs = __importStar(require("fs"));
+const cp = __importStar(require("child_process"));
 function setup(app, config, directory, cache, fileReader) {
-    app.ports.loadFile.subscribe(function (fileName) {
-        fileReader.readFile(directory, fileName, function (result) {
-            return app.ports.fileContent.send(result);
-        });
+    app.ports.loadFile.subscribe((fileName) => {
+        fileReader.readFile(directory, fileName, (result) => app.ports.fileContent.send(result));
     });
-    app.ports.storeAstForSha.subscribe(function (data) {
-        var sha1 = data.sha1;
-        var content = data.ast;
+    app.ports.storeAstForSha.subscribe((data) => {
+        const sha1 = data.sha1;
+        const content = data.ast;
         cache.storeShaJson(sha1, content);
     });
-    app.ports.storeFile.subscribe(function (file) {
+    app.ports.storeFile.subscribe((file) => {
         new Promise(function (resolve) {
             fs.writeFile(file.file, file.newContent, function () {
                 try {
@@ -56,11 +54,11 @@ function setup(app, config, directory, cache, fileReader) {
             app.ports.onStoredFiles.send(true);
         });
     });
-    app.ports.loadFileContentWithSha.subscribe(function (fileName) {
-        new Promise(function (accept) {
+    app.ports.loadFileContentWithSha.subscribe((fileName) => {
+        new Promise((accept) => {
             fileReader.readFile(directory, fileName, accept);
-        }).then(function (fileContent) {
-            var x = {
+        }).then((fileContent) => {
+            const x = {
                 file: {
                     version: fileContent.sha1,
                     path: fileContent.path,
@@ -68,7 +66,7 @@ function setup(app, config, directory, cache, fileReader) {
                 content: fileContent.content,
             };
             app.ports.onFileContentWithShas.send(x);
-        }, function (e) {
+        }, (e) => {
             console.log('Error when loading files for loadFileContentWithShas:');
             console.log(e);
         });

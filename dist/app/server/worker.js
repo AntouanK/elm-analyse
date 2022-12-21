@@ -23,13 +23,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var fileLoadingPorts = __importStar(require("../file-loading-ports"));
-var loggingPorts = __importStar(require("../util/logging-ports"));
-var dependencies = __importStar(require("../util/dependencies"));
-var opn = require('opn');
+const fileLoadingPorts = __importStar(require("../file-loading-ports"));
+const loggingPorts = __importStar(require("../util/logging-ports"));
+const dependencies = __importStar(require("../util/dependencies"));
+const opn = require('opn');
 function run(config, project, onload) {
     dependencies.getDependencies(function (registry) {
-        var directory = process.cwd();
+        const directory = process.cwd();
         var Elm = require('../backend-elm.js');
         var app = Elm.Elm.Analyser.init({
             flags: {
@@ -38,7 +38,7 @@ function run(config, project, onload) {
                 project: project
             }
         });
-        app.ports.sendReportValue.subscribe(function (report) {
+        app.ports.sendReportValue.subscribe((report) => {
             console.log('Found ' + report.messages.length + ' message(s)');
         });
         loggingPorts.setup(app, config);
@@ -49,4 +49,4 @@ function run(config, project, onload) {
         }
     });
 }
-exports.default = { run: run };
+exports.default = { run };

@@ -24,16 +24,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setup = void 0;
-var DependencyFiles = __importStar(require("./ports/dependency-files"));
-var RawDependencies = __importStar(require("./ports/raw-dependencies"));
-var HttpDocumentation = __importStar(require("./ports/http-documentation"));
-var FileLoader = __importStar(require("./ports/file-loader"));
-var Context = __importStar(require("./ports/context"));
-var cache_1 = require("./util/cache");
-var fileReader_1 = require("./fileReader");
+const DependencyFiles = __importStar(require("./ports/dependency-files"));
+const RawDependencies = __importStar(require("./ports/raw-dependencies"));
+const HttpDocumentation = __importStar(require("./ports/http-documentation"));
+const FileLoader = __importStar(require("./ports/file-loader"));
+const Context = __importStar(require("./ports/context"));
+const cache_1 = require("./util/cache");
+const fileReader_1 = require("./fileReader");
 function setup(app, config, directory) {
-    var localCache = new cache_1.LocalCache(directory);
-    var fileReader = new fileReader_1.FileReader(localCache);
+    const localCache = new cache_1.LocalCache(directory);
+    const fileReader = new fileReader_1.FileReader(localCache);
     HttpDocumentation.setup(app);
     RawDependencies.setup(app);
     DependencyFiles.setup(app, directory, fileReader);

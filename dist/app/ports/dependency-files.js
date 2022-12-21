@@ -24,17 +24,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setup = void 0;
-var fileGatherer = __importStar(require("../util/file-gatherer"));
+const fileGatherer = __importStar(require("../util/file-gatherer"));
 function setup(app, directory, fileReader) {
-    app.ports.loadDependencyFiles.subscribe(function (dependency) {
-        var result = fileGatherer.getDependencyFiles(directory, dependency);
-        var promises = result.map(function (fileName) { return new Promise(function (accept) { return fileReader.readFile(directory, fileName, accept); }); });
-        Promise.all(promises).then(function (targets) {
-            return app.ports.onDependencyFiles.send({
-                dependency: dependency,
-                files: targets
-            });
-        }, function (e) {
+    app.ports.loadDependencyFiles.subscribe((dependency) => {
+        const result = fileGatherer.getDependencyFiles(directory, dependency);
+        const promises = result.map(fileName => new Promise(accept => fileReader.readFile(directory, fileName, accept)));
+        Promise.all(promises).then(targets => app.ports.onDependencyFiles.send({
+            dependency: dependency,
+            files: targets
+        }), e => {
             console.log('Error when loading files for loadDependencyFiles:', dependency);
             console.log(e);
         });

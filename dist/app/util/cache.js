@@ -24,54 +24,52 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LocalCache = exports.storeDependencyJson = exports.storePackageDependencyInfo = exports.readPackageDependencyInfo = exports.readDependencyJson = void 0;
-var fs = __importStar(require("fs"));
+const fs = __importStar(require("fs"));
 // const fs = require('fs');
-var fsExtra = __importStar(require("fs-extra"));
+const fsExtra = __importStar(require("fs-extra"));
 // const fsExtra = require('fs-extra');
-var osHomedir = require('os-homedir');
-var path = __importStar(require("path"));
-var packageJsonPath = path.resolve(__dirname, '..', '..', '..', 'package.json');
-var elmAnalyseVersion = require(packageJsonPath).version;
-var LocalCache = /** @class */ (function () {
-    function LocalCache(projectPath) {
+const osHomedir = require('os-homedir');
+const path = __importStar(require("path"));
+const version_1 = require("./version");
+class LocalCache {
+    constructor(projectPath) {
         this.cachePath = path.join(projectPath, 'elm-stuff', '.elm-analyse');
     }
-    LocalCache.prototype.storeShaJson = function (sha1, content) {
+    storeShaJson(sha1, content) {
         fs.writeFile(path.resolve(this.cachePath, '_shas', sha1 + '.json'), JSON.stringify(content), function () { });
-    };
-    LocalCache.prototype.elmCachePathForSha = function (sha) {
+    }
+    elmCachePathForSha(sha) {
         return path.resolve(this.cachePath, '_shas', sha + '.elma');
-    };
-    LocalCache.prototype.astCachePathForSha = function (sha) {
+    }
+    astCachePathForSha(sha) {
         return path.resolve(this.cachePath, '_shas', sha + '.json');
-    };
-    LocalCache.prototype.setupShaFolder = function () {
+    }
+    setupShaFolder() {
         fsExtra.ensureDirSync(path.resolve(this.cachePath, '_shas'));
-    };
-    LocalCache.prototype.hasAstForSha = function (sha) {
+    }
+    hasAstForSha(sha) {
         return fs.existsSync(this.astCachePathForSha(sha));
-    };
-    LocalCache.prototype.readAstForSha = function (sha) {
+    }
+    readAstForSha(sha) {
         return fs.readFileSync(this.astCachePathForSha(sha)).toString();
-    };
-    return LocalCache;
-}());
+    }
+}
 exports.LocalCache = LocalCache;
 var major;
-if (elmAnalyseVersion.split('.')[0] === '0') {
-    major = '0.' + elmAnalyseVersion.split('.')[1];
+if (version_1.ELM_ANALYSE_VERSION.split('.')[0] === '0') {
+    major = '0.' + version_1.ELM_ANALYSE_VERSION.split('.')[1];
 }
 else {
-    major = elmAnalyseVersion.split('.')[0];
+    major = version_1.ELM_ANALYSE_VERSION.split('.')[0];
 }
-var globalCachePath = path.resolve(osHomedir(), '.elm-analyse', major);
+const globalCachePath = path.resolve(osHomedir(), '.elm-analyse', major);
 function readPackageDependencyInfo(cb) {
     fs.readFile(path.resolve(globalCachePath, 'all-packages.json'), function (err, data) {
         if (err) {
             cb(err, undefined);
         }
         else {
-            var s = data.toString();
+            const s = data.toString();
             var parsed;
             try {
                 parsed = JSON.parse(s);
@@ -95,8 +93,8 @@ function readDependencyJson(dependency, version, cb) {
 }
 exports.readDependencyJson = readDependencyJson;
 function storeDependencyJson(dependency, version, content) {
-    var targetDir = path.resolve(globalCachePath, 'interfaces', dependency, version);
-    var targetPath = path.resolve(targetDir, 'dependency.json');
+    const targetDir = path.resolve(globalCachePath, 'interfaces', dependency, version);
+    const targetPath = path.resolve(targetDir, 'dependency.json');
     fsExtra.ensureDirSync(targetDir);
     //TODO Hanlding
     fs.writeFile(targetPath, content, function () { });

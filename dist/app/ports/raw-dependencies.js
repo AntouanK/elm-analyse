@@ -24,13 +24,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setup = void 0;
-var cache = __importStar(require("../util/cache"));
+const cache = __importStar(require("../util/cache"));
 function setup(app) {
-    app.ports.storeRawDependency.subscribe(function (x) {
-        var dependency = x.dependency;
+    app.ports.storeRawDependency.subscribe((x) => {
+        const dependency = x.dependency;
         cache.storeDependencyJson(dependency.name, dependency.version, x.content);
     });
-    app.ports.loadRawDependency.subscribe(function (dependency) {
+    app.ports.loadRawDependency.subscribe((dependency) => {
         cache.readDependencyJson(dependency.name, dependency.version, function (err, content) {
             if (err) {
                 app.ports.onRawDependency.send({
@@ -40,7 +40,7 @@ function setup(app) {
             }
             else {
                 try {
-                    var parsed = JSON.parse(content.toString());
+                    const parsed = JSON.parse(content.toString());
                     app.ports.onRawDependency.send({
                         dependency: dependency,
                         json: parsed

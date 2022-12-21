@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Server from '../server/app';
 import Analyser from '../analyser';
+import { ELM_ANALYSE_VERSION } from '../util/version';
 
 const args = minimist(process.argv.slice(2), {
     alias: {
@@ -20,12 +21,6 @@ const args = minimist(process.argv.slice(2), {
 });
 
 (function () {
-    const elmAnalyseVersion = require(path.join(
-        __dirname,
-        '../../..',
-        'package.json'
-    )).version;
-
     const elmFormatPath = args['elm-format-path'] || 'elm-format';
 
     const validFormats = ['json', 'human'];
@@ -38,7 +33,7 @@ const args = minimist(process.argv.slice(2), {
         logging: args.logging || false,
     };
     const info = {
-        version: elmAnalyseVersion,
+        version: ELM_ANALYSE_VERSION,
         cwd: process.cwd(),
         config: config,
     };
@@ -75,7 +70,7 @@ const args = minimist(process.argv.slice(2), {
     }
 
     if (args.version) {
-        console.log(elmAnalyseVersion);
+        console.log(ELM_ANALYSE_VERSION);
         process.exit(0);
     }
 

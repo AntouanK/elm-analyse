@@ -24,9 +24,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDependencies = void 0;
-var request = __importStar(require("request"));
-var cache = __importStar(require("./cache"));
-var fetchDependencies = function (cb) {
+const request = __importStar(require("request"));
+const cache = __importStar(require("./cache"));
+const fetchDependencies = function (cb) {
     request.get('http://package.elm-lang.org/search.json', function (err, _, body) {
         if (err) {
             cb(null);
@@ -42,7 +42,7 @@ var fetchDependencies = function (cb) {
         cb(cbValue);
     });
 };
-var updatePackageDependencyInfo = function (cb, defaultValue) {
+const updatePackageDependencyInfo = function (cb, defaultValue) {
     fetchDependencies(function (result) {
         console.log('Fetched dependencies');
         if (result == null) {
@@ -56,11 +56,11 @@ var updatePackageDependencyInfo = function (cb, defaultValue) {
         cb(result);
     });
 };
-var isOutdated = function (timestamp) {
-    var barrier = new Date().getTime() - 1000 * 60 * 60;
+const isOutdated = function (timestamp) {
+    const barrier = new Date().getTime() - 1000 * 60 * 60;
     return timestamp < barrier;
 };
-var getDependencies = function (cb) {
+const getDependencies = function (cb) {
     cache.readPackageDependencyInfo(function (err, cached) {
         if (err && err !== null) {
             console.log('Fetching package information from package.elm-lang.org.');

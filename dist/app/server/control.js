@@ -7,7 +7,7 @@ function run(app, elm) {
                 elm.ports.onReset.send(true);
             }
             else if (msg.match(/^fix:\d+$/)) {
-                var messageId = parseInt(msg.replace('fix:', ''));
+                const messageId = parseInt(msg.replace('fix:', ''));
                 elm.ports.onFixMessage.send(messageId);
             }
             else {
@@ -16,4 +16,4 @@ function run(app, elm) {
         });
     });
 }
-exports.default = { run: run };
+exports.default = { run };

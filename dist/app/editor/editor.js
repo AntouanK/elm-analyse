@@ -25,32 +25,32 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 /*eslint no-undef: 0*/
 // const Editor = this.Elm;
-var WebSocketClient = __importStar(require("./ws-client"));
-var Elm = require('./elm');
-var Editor = Elm.Editor;
+const WebSocketClient = __importStar(require("./ws-client"));
+const Elm = require('./elm');
+const Editor = Elm.Editor;
 module.exports = function setup(port) {
-    var ws;
+    let ws;
     var listenerId = 0;
-    var listeners = {};
-    var app = Editor.worker({
+    const listeners = {};
+    const app = Editor.worker({
         serverHost: 'localhost',
         serverPort: 3000
     });
-    var eventListener = {
+    const eventListener = {
         onMessage: function incoming(data) {
             try {
-                var parsed = JSON.parse(data);
+                const parsed = JSON.parse(data);
                 app.ports.stateListener.send(parsed);
             }
             catch (e) {
                 console.log('Parse state failed');
             }
         },
-        onReconnect: function () { return console.log('Elm editor: On reconnect'); },
-        onOpen: function () { return console.log('Elm editor: On open'); }
+        onReconnect: () => console.log('Elm editor: On reconnect'),
+        onOpen: () => console.log('Elm editor: On open')
     };
     app.ports.editorMessages.subscribe(function (x) {
-        Object.keys(listeners).forEach(function (k) {
+        Object.keys(listeners).forEach((k) => {
             listeners[k](x);
         });
     });
@@ -69,7 +69,7 @@ module.exports = function setup(port) {
             );
         },
         onState: function (cb) {
-            var identifier = listenerId++;
+            const identifier = listenerId++;
             listeners[identifier] = cb;
             return function cancel() {
                 delete listeners[identifier];

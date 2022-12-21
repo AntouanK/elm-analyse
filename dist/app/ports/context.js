@@ -24,12 +24,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setup = void 0;
-var fs = __importStar(require("fs"));
-var fileGatherer = __importStar(require("../util/file-gatherer"));
-var path = __importStar(require("path"));
+const fs = __importStar(require("fs"));
+const fileGatherer = __importStar(require("../util/file-gatherer"));
+const path = __importStar(require("path"));
 function setup(app, directory) {
-    app.ports.loadContext.subscribe(function () {
-        var input = fileGatherer.gather(directory);
+    app.ports.loadContext.subscribe(() => {
+        const input = fileGatherer.gather(directory);
         var configuration;
         try {
             configuration = fs.readFileSync(path.join(directory, 'elm-analyse.json')).toString();
@@ -37,7 +37,7 @@ function setup(app, directory) {
         catch (e) {
             configuration = '';
         }
-        var data = {
+        const data = {
             sourceFiles: input.sourceFiles,
             interfaceFiles: input.interfaceFiles,
             configuration: configuration

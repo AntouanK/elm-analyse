@@ -77,32 +77,32 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /*eslint no-undef: 0*/
-var WebSocketClient = __importStar(__require(1,0));
-var Elm = __require(2,0);
-var Editor = Elm.Editor;
+const WebSocketClient = __importStar(__require(1,0));
+const Elm = __require(2,0);
+const Editor = Elm.Editor;
 module.exports = function setup(port) {
-    var ws;
+    let ws;
     var listenerId = 0;
-    var listeners = {};
-    var app = Editor.worker({
+    const listeners = {};
+    const app = Editor.worker({
         serverHost: 'localhost',
         serverPort: 3000
     });
-    var eventListener = {
+    const eventListener = {
         onMessage: function incoming(data) {
             try {
-                var parsed = JSON.parse(data);
+                const parsed = JSON.parse(data);
                 app.ports.stateListener.send(parsed);
             }
             catch (e) {
                 console.log('Parse state failed');
             }
         },
-        onReconnect: function () { return console.log('Elm editor: On reconnect'); },
-        onOpen: function () { return console.log('Elm editor: On open'); }
+        onReconnect: () => console.log('Elm editor: On reconnect'),
+        onOpen: () => console.log('Elm editor: On open')
     };
     app.ports.editorMessages.subscribe(function (x) {
-        Object.keys(listeners).forEach(function (k) {
+        Object.keys(listeners).forEach((k) => {
             listeners[k](x);
         });
     });
@@ -116,7 +116,7 @@ module.exports = function setup(port) {
             );
         },
         onState: function (cb) {
-            var identifier = listenerId++;
+            const identifier = listenerId++;
             listeners[identifier] = cb;
             return function cancel() {
                 delete listeners[identifier];
@@ -142,24 +142,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connect = void 0;
-var ws_1 = __importDefault(__require(3,1));
+const ws_1 = __importDefault(__require(3,1));
 function connect(url, es) {
     var ws = new ws_1.default(url);
-    var autoReconnectInterval = 5000;
+    const autoReconnectInterval = 5000;
     var number = 0;
     function bind(ws, events, reconnect) {
-        ws.on('open', function () {
+        ws.on('open', () => {
             if (events.onOpen) {
                 events.onOpen();
             }
         });
-        ws.on('message', function (data) {
+        ws.on('message', (data) => {
             number++;
             if (events.onMessage) {
                 events.onMessage(data, number);
             }
         });
-        ws.on('close', function (e) {
+        ws.on('close', (e) => {
             switch (e) {
                 case 1000:
                     break;
@@ -171,7 +171,7 @@ function connect(url, es) {
                 events.onClose(e);
             }
         });
-        ws.on('error', function (e) {
+        ws.on('error', (e) => {
             switch (e.code) {
                 case 'ECONNREFUSED':
                     reconnect(e);
@@ -184,7 +184,7 @@ function connect(url, es) {
             }
         });
     }
-    var reconnect = function () {
+    const reconnect = function () {
         ws.removeAllListeners();
         setTimeout(function () {
             if (es.onReconnect) {
@@ -196,7 +196,7 @@ function connect(url, es) {
     };
     bind(ws, es, reconnect);
     return {
-        stop: function () {
+        stop: () => {
             ws.close();
         }
     };

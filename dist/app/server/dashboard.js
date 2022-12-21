@@ -27,7 +27,7 @@ function run(app, elm, expressWs) {
     });
     elm.ports.sendState.subscribe(function (newState) {
         state = newState;
-        expressWs.getWss().clients.forEach(function (x) { return x.send(renderState()); });
+        expressWs.getWss().clients.forEach((x) => x.send(renderState()));
     });
     return {
         getState: function () {
@@ -38,4 +38,4 @@ function run(app, elm, expressWs) {
         }
     };
 }
-exports.default = { run: run };
+exports.default = { run };

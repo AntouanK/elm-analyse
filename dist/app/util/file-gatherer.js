@@ -27,14 +27,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.includedInFileSet = exports.getDependencyFiles = exports.gather = void 0;
-var fs = __importStar(require("fs"));
-var lodash_1 = __importDefault(require("lodash"));
-var find = __importStar(require("find"));
-var _path = __importStar(require("path"));
+const fs = __importStar(require("fs"));
+const lodash_1 = __importDefault(require("lodash"));
+const find = __importStar(require("find"));
+const _path = __importStar(require("path"));
 function isRealElmPaths(sourceDir, filePath) {
-    var modulePath = filePath.replace(_path.normalize(sourceDir + '/'), '');
-    var moduleParts = modulePath.split('/');
-    return lodash_1.default.every(moduleParts, function (m) { return m.match('^[A-Z].*'); });
+    const modulePath = filePath.replace(_path.normalize(sourceDir + '/'), '');
+    const moduleParts = modulePath.split('/');
+    return lodash_1.default.every(moduleParts, m => m.match('^[A-Z].*'));
 }
 function includedInFileSet(path) {
     if (!path.match(/\.elm$/)) {
@@ -44,23 +44,23 @@ function includedInFileSet(path) {
 }
 exports.includedInFileSet = includedInFileSet;
 function targetFilesForPathAndPackage(directory, path, pack) {
-    var packTargetDirs = pack['source-directories'] || ['src'];
-    var targetFiles = lodash_1.default.uniq(lodash_1.default.flatten(packTargetDirs.map(function (x) {
-        var sourceDir = _path.normalize(path + '/' + x);
-        var exists = fs.existsSync(sourceDir);
+    const packTargetDirs = pack['source-directories'] || ['src'];
+    const targetFiles = lodash_1.default.uniq(lodash_1.default.flatten(packTargetDirs.map(x => {
+        const sourceDir = _path.normalize(path + '/' + x);
+        const exists = fs.existsSync(sourceDir);
         if (!exists) {
             return [];
         }
-        var dirFiles = find.fileSync(/\.elm$/, sourceDir).filter(function (x) {
-            var resolvedX = _path.resolve(x);
-            var resolvedPath = _path.resolve(path);
-            var relativePath = resolvedX.replace(resolvedPath, '');
+        const dirFiles = find.fileSync(/\.elm$/, sourceDir).filter(x => {
+            const resolvedX = _path.resolve(x);
+            const resolvedPath = _path.resolve(path);
+            const relativePath = resolvedX.replace(resolvedPath, '');
             return includedInFileSet(relativePath) && x.length > 0;
         });
-        return dirFiles.filter(function (x) { return isRealElmPaths(sourceDir, x); });
+        return dirFiles.filter(x => isRealElmPaths(sourceDir, x));
     }))).map(function (s) {
-        var sParts = s.split(_path.sep);
-        var dirParts = directory.split(_path.sep);
+        const sParts = s.split(_path.sep);
+        const dirParts = directory.split(_path.sep);
         while (sParts.length > 0 && dirParts.length > 0) {
             if (sParts[0] == dirParts[0]) {
                 sParts.shift();
@@ -70,26 +70,24 @@ function targetFilesForPathAndPackage(directory, path, pack) {
                 break;
             }
         }
-        var result = dirParts.map(function () { return '../'; }).join('') + sParts.join('/');
+        const result = dirParts.map(() => '../').join('') + sParts.join('/');
         return _path.normalize(result);
     });
     return targetFiles;
 }
 function getDependencyFiles(directory, dep) {
-    var depPath = "".concat(directory, "/elm-stuff/packages/").concat(dep.name, "/").concat(dep.version);
-    var depPackageFile = require(depPath + '/elm.json');
-    var unfilteredTargetFiles = targetFilesForPathAndPackage(directory, depPath, depPackageFile);
-    var exposedModules = depPackageFile['exposed-modules'].map(function (x) {
-        return _path.normalize('/' + x.replace(new RegExp('\\.', 'g'), '/') + '.elm');
-    });
+    const depPath = `${directory}/elm-stuff/packages/${dep.name}/${dep.version}`;
+    const depPackageFile = require(depPath + '/elm.json');
+    const unfilteredTargetFiles = targetFilesForPathAndPackage(directory, depPath, depPackageFile);
+    const exposedModules = depPackageFile['exposed-modules'].map(x => _path.normalize('/' + x.replace(new RegExp('\\.', 'g'), '/') + '.elm'));
     return unfilteredTargetFiles.filter(function (x) {
-        return exposedModules.filter(function (e) { return lodash_1.default.endsWith(x, e); })[0];
+        return exposedModules.filter(e => lodash_1.default.endsWith(x, e))[0];
     });
 }
 exports.getDependencyFiles = getDependencyFiles;
 function gather(directory) {
-    var packageFile = require(directory + '/elm.json');
-    var input = {
+    const packageFile = require(directory + '/elm.json');
+    const input = {
         interfaceFiles: [],
         sourceFiles: targetFilesForPathAndPackage(directory, directory, packageFile)
     };

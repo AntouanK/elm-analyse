@@ -25,21 +25,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FileReader = void 0;
 // Reference the module
-var fs = __importStar(require("fs"));
-var sums = require('sums');
-var FileReader = /** @class */ (function () {
-    function FileReader(cache) {
+const fs = __importStar(require("fs"));
+const sums = require('sums');
+class FileReader {
+    constructor(cache) {
         this.cache = cache;
         cache.setupShaFolder();
     }
-    FileReader.prototype.readFileNotCached = function (realPath, path, checksum) {
-        return new Promise(function (accept) {
+    readFileNotCached(realPath, path, checksum) {
+        return new Promise((accept) => {
             fs.readFile(realPath, function (e, content) {
                 if (e) {
                     accept(errorResponse(path));
                     return;
                 }
-                var originalContent = content.toString();
+                const originalContent = content.toString();
                 accept({
                     success: true,
                     path: path,
@@ -49,31 +49,29 @@ var FileReader = /** @class */ (function () {
                 });
             });
         });
-    };
-    FileReader.prototype.readFile = function (directory, path, cb) {
-        var _this = this;
+    }
+    readFile(directory, path, cb) {
         var real = directory + '/' + path;
         sums
             .checksum(fs.createReadStream(real))
-            .then(function (checkSumResult) {
-            var checksum = checkSumResult.sum;
-            if (_this.cache.hasAstForSha(checksum)) {
+            .then((checkSumResult) => {
+            const checksum = checkSumResult.sum;
+            if (this.cache.hasAstForSha(checksum)) {
                 return {
                     success: true,
                     path: path,
                     sha1: checksum,
                     content: fs.readFileSync(real).toString(),
-                    ast: _this.cache.readAstForSha(checksum)
+                    ast: this.cache.readAstForSha(checksum)
                 };
             }
-            return _this.readFileNotCached(real, path, checksum);
+            return this.readFileNotCached(real, path, checksum);
         }, function () {
             return errorResponse(path);
         })
             .then(cb);
-    };
-    return FileReader;
-}());
+    }
+}
 exports.FileReader = FileReader;
 function errorResponse(path) {
     return {

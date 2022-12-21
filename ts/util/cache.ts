@@ -4,8 +4,7 @@ import * as fsExtra from 'fs-extra';
 // const fsExtra = require('fs-extra');
 const osHomedir = require('os-homedir');
 import * as path from 'path';
-const packageJsonPath = path.resolve(__dirname, '..', '..', '..', 'package.json');
-const elmAnalyseVersion = require(packageJsonPath).version;
+import { ELM_ANALYSE_VERSION } from './version';
 
 class LocalCache {
     private cachePath: string;
@@ -13,7 +12,11 @@ class LocalCache {
         this.cachePath = path.join(projectPath, 'elm-stuff', '.elm-analyse');
     }
     public storeShaJson(sha1: string, content: JSON) {
-        fs.writeFile(path.resolve(this.cachePath, '_shas', sha1 + '.json'), JSON.stringify(content), function() {});
+        fs.writeFile(
+            path.resolve(this.cachePath, '_shas', sha1 + '.json'),
+            JSON.stringify(content),
+            function () {}
+        );
     }
     public elmCachePathForSha(sha: string) {
         return path.resolve(this.cachePath, '_shas', sha + '.elma');
@@ -34,47 +37,86 @@ class LocalCache {
     }
 }
 var major: string;
-if (elmAnalyseVersion.split('.')[0] === '0') {
-    major = '0.' + elmAnalyseVersion.split('.')[1];
+if (ELM_ANALYSE_VERSION.split('.')[0] === '0') {
+    major = '0.' + ELM_ANALYSE_VERSION.split('.')[1];
 } else {
-    major = elmAnalyseVersion.split('.')[0];
+    major = ELM_ANALYSE_VERSION.split('.')[0];
 }
-const globalCachePath: string = path.resolve(osHomedir(), '.elm-analyse', major);
+const globalCachePath: string = path.resolve(
+    osHomedir(),
+    '.elm-analyse',
+    major
+);
 
-function readPackageDependencyInfo(cb: ((err: any, result: any) => void)) {
-    fs.readFile(path.resolve(globalCachePath, 'all-packages.json'), function(err, data) {
-        if (err) {
-            cb(err, undefined);
-        } else {
-            const s = data.toString();
-            var parsed;
-            try {
-                parsed = JSON.parse(s);
-            } catch (e) {
-                cb(e, undefined);
-                return;
+function readPackageDependencyInfo(cb: (err: any, result: any) => void) {
+    fs.readFile(
+        path.resolve(globalCachePath, 'all-packages.json'),
+        function (err, data) {
+            if (err) {
+                cb(err, undefined);
+            } else {
+                const s = data.toString();
+                var parsed;
+                try {
+                    parsed = JSON.parse(s);
+                } catch (e) {
+                    cb(e, undefined);
+                    return;
+                }
+                cb(null, parsed);
             }
-            cb(null, parsed);
         }
-    });
+    );
 }
 
 function storePackageDependencyInfo(data: any) {
-    fs.writeFile(path.resolve(globalCachePath, 'all-packages.json'), JSON.stringify(data), function() {});
+    fs.writeFile(
+        path.resolve(globalCachePath, 'all-packages.json'),
+        JSON.stringify(data),
+        function () {}
+    );
 }
-function readDependencyJson(dependency: string, version: string, cb: (err: NodeJS.ErrnoException | null, data: Buffer) => void) {
+function readDependencyJson(
+    dependency: string,
+    version: string,
+    cb: (err: NodeJS.ErrnoException | null, data: Buffer) => void
+) {
     //TODO Error handling
 
-    fs.readFile(path.resolve(globalCachePath, 'interfaces', dependency, version, 'dependency.json'), cb);
+    fs.readFile(
+        path.resolve(
+            globalCachePath,
+            'interfaces',
+            dependency,
+            version,
+            'dependency.json'
+        ),
+        cb
+    );
 }
 
-function storeDependencyJson(dependency: string, version: string, content: string) {
-    const targetDir = path.resolve(globalCachePath, 'interfaces', dependency, version);
+function storeDependencyJson(
+    dependency: string,
+    version: string,
+    content: string
+) {
+    const targetDir = path.resolve(
+        globalCachePath,
+        'interfaces',
+        dependency,
+        version
+    );
     const targetPath = path.resolve(targetDir, 'dependency.json');
 
     fsExtra.ensureDirSync(targetDir);
     //TODO Hanlding
-    fs.writeFile(targetPath, content, function() {});
+    fs.writeFile(targetPath, content, function () {});
 }
 
-export { readDependencyJson, readPackageDependencyInfo, storePackageDependencyInfo, storeDependencyJson, LocalCache };
+export {
+    readDependencyJson,
+    readPackageDependencyInfo,
+    storePackageDependencyInfo,
+    storeDependencyJson,
+    LocalCache,
+};
