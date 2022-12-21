@@ -1,15 +1,32 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var request = __importStar(require("request"));
-var cache = __importStar(require("./cache"));
-var fetchDependencies = function (cb) {
+exports.getDependencies = void 0;
+const request = __importStar(require("request"));
+const cache = __importStar(require("./cache"));
+const fetchDependencies = function (cb) {
     request.get('http://package.elm-lang.org/search.json', function (err, _, body) {
         if (err) {
             cb(null);
@@ -25,7 +42,7 @@ var fetchDependencies = function (cb) {
         cb(cbValue);
     });
 };
-var updatePackageDependencyInfo = function (cb, defaultValue) {
+const updatePackageDependencyInfo = function (cb, defaultValue) {
     fetchDependencies(function (result) {
         console.log('Fetched dependencies');
         if (result == null) {
@@ -34,18 +51,18 @@ var updatePackageDependencyInfo = function (cb, defaultValue) {
         }
         cache.storePackageDependencyInfo({
             timestamp: new Date().getTime(),
-            data: result
+            data: result,
         });
         cb(result);
     });
 };
-var isOutdated = function (timestamp) {
-    var barrier = new Date().getTime() - 1000 * 60 * 60;
+const isOutdated = function (timestamp) {
+    const barrier = new Date().getTime() - 1000 * 60 * 60;
     return timestamp < barrier;
 };
-var getDependencies = function (cb) {
+const getDependencies = function (cb) {
     cache.readPackageDependencyInfo(function (err, cached) {
-        if (err) {
+        if (err && err !== null) {
             console.log('Fetching package information from package.elm-lang.org.');
             updatePackageDependencyInfo(cb, null);
         }

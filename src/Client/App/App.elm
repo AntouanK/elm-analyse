@@ -65,7 +65,12 @@ subscriptions _ =
 
 init : () -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
 init () l key =
-    onLocation l { location = Routing.NotFound, key = key, content = NotFound, state = RemoteData.Loading }
+    onLocation l
+        { location = Routing.NotFound
+        , key = key
+        , content = NotFound
+        , state = RemoteData.Loading
+        }
 
 
 onLocation : Url -> Model -> ( Model, Cmd Msg )

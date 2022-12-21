@@ -36,6 +36,7 @@ type alias Model =
     , server : Bool
     , registry : Registry
     , project : Elm.Project.Project
+    , logging : Bool
     }
 
 
@@ -63,6 +64,7 @@ type alias Flags =
     { server : Bool
     , registry : Value
     , project : Value
+    , logging : Bool
     }
 
 
@@ -90,6 +92,7 @@ init flags =
               , changedFiles = []
               , server = flags.server
               , registry = Registry.fromValue flags.registry
+              , logging = flags.logging
               , project =
                     Elm.Project.Application
                         { elm = Elm.Version.one
@@ -116,6 +119,7 @@ init flags =
                   , state = State.initialState
                   , changedFiles = []
                   , server = flags.server
+                  , logging = flags.logging
                   , registry = Registry.fromValue flags.registry
                   , project = v
                   }

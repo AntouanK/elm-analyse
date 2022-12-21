@@ -1,28 +1,45 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FileReader = void 0;
 // Reference the module
-var fs = __importStar(require("fs"));
-var sums = require('sums');
-var FileReader = /** @class */ (function () {
-    function FileReader(cache) {
+const fs = __importStar(require("fs"));
+const sums = require('sums');
+class FileReader {
+    constructor(cache) {
         this.cache = cache;
         cache.setupShaFolder();
     }
-    FileReader.prototype.readFileNotCached = function (realPath, path, checksum) {
-        return new Promise(function (accept) {
+    readFileNotCached(realPath, path, checksum) {
+        return new Promise((accept) => {
             fs.readFile(realPath, function (e, content) {
                 if (e) {
                     accept(errorResponse(path));
                     return;
                 }
-                var originalContent = content.toString();
+                const originalContent = content.toString();
                 accept({
                     success: true,
                     path: path,
@@ -32,31 +49,29 @@ var FileReader = /** @class */ (function () {
                 });
             });
         });
-    };
-    FileReader.prototype.readFile = function (directory, path, cb) {
-        var _this = this;
+    }
+    readFile(directory, path, cb) {
         var real = directory + '/' + path;
         sums
             .checksum(fs.createReadStream(real))
-            .then(function (checkSumResult) {
-            var checksum = checkSumResult.sum;
-            if (_this.cache.hasAstForSha(checksum)) {
+            .then((checkSumResult) => {
+            const checksum = checkSumResult.sum;
+            if (this.cache.hasAstForSha(checksum)) {
                 return {
                     success: true,
                     path: path,
                     sha1: checksum,
                     content: fs.readFileSync(real).toString(),
-                    ast: _this.cache.readAstForSha(checksum)
+                    ast: this.cache.readAstForSha(checksum)
                 };
             }
-            return _this.readFileNotCached(real, path, checksum);
+            return this.readFileNotCached(real, path, checksum);
         }, function () {
             return errorResponse(path);
         })
             .then(cb);
-    };
-    return FileReader;
-}());
+    }
+}
 exports.FileReader = FileReader;
 function errorResponse(path) {
     return {

@@ -1,46 +1,63 @@
 #!/usr/bin/env node
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var minimist_1 = __importDefault(require("minimist"));
-var fs = __importStar(require("fs"));
-var path = __importStar(require("path"));
-var app_1 = __importDefault(require("../server/app"));
-var analyser_1 = __importDefault(require("../analyser"));
-var args = minimist_1.default(process.argv.slice(2), {
+const minimist_1 = __importDefault(require("minimist"));
+const fs = __importStar(require("fs"));
+const app_1 = __importDefault(require("../server/app"));
+const analyser_1 = __importDefault(require("../analyser"));
+const version_1 = require("../util/version");
+const args = (0, minimist_1.default)(process.argv.slice(2), {
     alias: {
         serve: 's',
         help: 'h',
         port: 'p',
         version: 'v',
-        open: 'o'
+        open: 'o',
+        logging: 'l',
     },
-    boolean: ['serve', 'help', 'version', 'open'],
-    string: ['port', 'elm-format-path', 'format']
+    boolean: ['serve', 'help', 'version', 'open', 'logging'],
+    string: ['port', 'elm-format-path', 'format'],
 });
 (function () {
-    var elmAnalyseVersion = require(path.join(__dirname, '../../..', 'package.json')).version;
-    var elmFormatPath = args['elm-format-path'] || 'elm-format';
-    var validFormats = ['json', 'human'];
-    var config = {
+    const elmFormatPath = args['elm-format-path'] || 'elm-format';
+    const validFormats = ['json', 'human'];
+    const config = {
         port: args.port || 3000,
         elmFormatPath: elmFormatPath,
         format: validFormats.indexOf(args.format) != -1 ? args.format : 'human',
-        open: args.open || false
+        open: args.open || false,
+        logging: args.logging || false,
     };
-    var info = {
-        version: elmAnalyseVersion,
+    const info = {
+        version: version_1.ELM_ANALYSE_VERSION,
         cwd: process.cwd(),
-        config: config
+        config: config,
     };
     if (args.help) {
         console.log('Usages:');
@@ -55,18 +72,19 @@ var args = minimist_1.default(process.argv.slice(2), {
         console.log('   --open, -o          Open default browser when server goes live.');
         console.log('   --elm-format-path   Path to elm-format. Defaults to `elm-format`.');
         console.log('   --format            Output format for CLI. Defaults to "human". Options "human"|"json"');
+        console.log('   --logging, -l       See the logs');
         process.exit(1);
     }
     if (args.version) {
-        console.log(elmAnalyseVersion);
+        console.log(version_1.ELM_ANALYSE_VERSION);
         process.exit(0);
     }
-    var packageFileExists = fs.existsSync('./elm.json');
+    const packageFileExists = fs.existsSync('./elm.json');
     if (!packageFileExists) {
         console.log('There is no elm.json file in this directory. elm-analyse will only work in directories where such a file is located.');
         process.exit(1);
     }
-    var projectFile = JSON.parse(fs.readFileSync('./elm.json').toString());
+    const projectFile = JSON.parse(fs.readFileSync('./elm.json').toString());
     if (args.serve) {
         app_1.default.start(config, info, projectFile);
         return;

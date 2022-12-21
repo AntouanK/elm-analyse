@@ -5,22 +5,22 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Server from '../server/app';
 import Analyser from '../analyser';
+import { ELM_ANALYSE_VERSION } from '../util/version';
 
-var args = minimist(process.argv.slice(2), {
+const args = minimist(process.argv.slice(2), {
     alias: {
         serve: 's',
         help: 'h',
         port: 'p',
         version: 'v',
-        open: 'o'
+        open: 'o',
+        logging: 'l',
     },
-    boolean: ['serve', 'help', 'version', 'open'],
-    string: ['port', 'elm-format-path', 'format']
+    boolean: ['serve', 'help', 'version', 'open', 'logging'],
+    string: ['port', 'elm-format-path', 'format'],
 });
 
-(function() {
-    const elmAnalyseVersion = require(path.join(__dirname, '../../..', 'package.json')).version;
-
+(function () {
     const elmFormatPath = args['elm-format-path'] || 'elm-format';
 
     const validFormats = ['json', 'human'];
@@ -29,40 +29,56 @@ var args = minimist(process.argv.slice(2), {
         port: args.port || 3000,
         elmFormatPath: elmFormatPath,
         format: validFormats.indexOf(args.format) != -1 ? args.format : 'human',
-        open: args.open || false
+        open: args.open || false,
+        logging: args.logging || false,
     };
     const info = {
-        version: elmAnalyseVersion,
+        version: ELM_ANALYSE_VERSION,
         cwd: process.cwd(),
-        config: config
+        config: config,
     };
 
     if (args.help) {
         console.log('Usages:');
         console.log('  $ elm-analyse');
-        console.log('    # Analyse the project and log messages to the console\n');
+        console.log(
+            '    # Analyse the project and log messages to the console\n'
+        );
         console.log('  $ elm-analyse -s');
         console.log(
             '    # Analyse the project and start a server. Allows inspection of messages through a browser (Default: http://localhost:3000).\n'
         );
         console.log('Options: ');
         console.log('   --help, -h          Print the help output.');
-        console.log('   --serve, -s         Enable server mode. Disabled by default.');
-        console.log('   --port, -p          The port on which the server should listen. Defaults to 3000.');
-        console.log('   --open, -o          Open default browser when server goes live.');
-        console.log('   --elm-format-path   Path to elm-format. Defaults to `elm-format`.');
-        console.log('   --format            Output format for CLI. Defaults to "human". Options "human"|"json"');
+        console.log(
+            '   --serve, -s         Enable server mode. Disabled by default.'
+        );
+        console.log(
+            '   --port, -p          The port on which the server should listen. Defaults to 3000.'
+        );
+        console.log(
+            '   --open, -o          Open default browser when server goes live.'
+        );
+        console.log(
+            '   --elm-format-path   Path to elm-format. Defaults to `elm-format`.'
+        );
+        console.log(
+            '   --format            Output format for CLI. Defaults to "human". Options "human"|"json"'
+        );
+        console.log('   --logging, -l       See the logs');
         process.exit(1);
     }
 
     if (args.version) {
-        console.log(elmAnalyseVersion);
+        console.log(ELM_ANALYSE_VERSION);
         process.exit(0);
     }
 
     const packageFileExists = fs.existsSync('./elm.json');
     if (!packageFileExists) {
-        console.log('There is no elm.json file in this directory. elm-analyse will only work in directories where such a file is located.');
+        console.log(
+            'There is no elm.json file in this directory. elm-analyse will only work in directories where such a file is located.'
+        );
         process.exit(1);
     }
 
